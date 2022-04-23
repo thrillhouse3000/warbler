@@ -216,8 +216,10 @@ def profile(user_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
+
     user = User.query.get_or_404(user_id)
     form = UserUpdateForm(obj=user)
+
     if form.validate_on_submit():
         u = User.authenticate(form.username.data, form.password.data)
         if u:
@@ -312,12 +314,13 @@ def homepage():
     """
 
     if g.user:
+        following_ids = [u.id for u in g.user.following] + [g.user.id]
         messages = (Message
                     .query
+                    .filter(Message.user_id.in_(following_ids))
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())
-
         return render_template('home.html', messages=messages)
 
     else:
