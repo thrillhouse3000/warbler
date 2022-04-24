@@ -1,0 +1,34 @@
+{% extends 'users/detail.html' %}
+{% block user_details %}
+  <div class="col-sm-9">
+    <div class="row">
+
+      {% for msg in user.likes %}
+
+        <div class="col-lg-4 col-md-6 col-12">
+          <div class="card user-card">
+            <div class="card-inner">
+              <div class="image-wrapper">
+                <img src="{{ msg.user.header_image_url }}" alt="" class="card-hero">
+              </div>
+              <div class="card-contents">
+                <a href="/users/{{ msg.user.id }}" class="card-link">
+                  <img src="{{ msg.user.image_url }}" alt="Image for {{ msg.user.username }}" class="card-image">
+                  <p>@{{ msg.user.username }}</p>
+                </a>
+                <form method="POST" action="/users/add_like/{{ msg.id }}" id="msgs-form">
+                    <button class="btn btn-sm {% if msg in g.user.likes %}btn-primary{% else %}btn-secondary{% endif %}">
+                      <i class="fa fa-thumbs-up"></i> 
+                    </button>
+                </form>
+              </div>
+              <p class="card-bio">{{msg.text}}</p>
+            </div>
+          </div>
+        </div>
+
+      {% endfor %}
+
+    </div>
+  </div>
+{% endblock %}

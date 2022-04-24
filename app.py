@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from forms import UserAddForm, LoginForm, MessageForm, UserUpdateForm
-from models import db, connect_db, User, Message
+from models import db, connect_db, User, Message, Likes
 
 CURR_USER_KEY = "curr_user"
 
@@ -178,6 +178,17 @@ def users_followers(user_id):
     user = User.query.get_or_404(user_id)
     return render_template('users/followers.html', user=user)
 
+@app.route('/users/<int:user_id>/likes')
+def users_likes(user_id):
+    """Show list of followers of this user."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user = User.query.get_or_404(user_id)
+    return render_template('users/likes.html', user=user)
+
 
 @app.route('/users/follow/<int:follow_id>', methods=['POST'])
 def add_follow(follow_id):
@@ -234,6 +245,20 @@ def profile(user_id):
             flash('Authentication Failed', 'danger')
             return redirect('/')
     return render_template('users/edit.html', form=form)
+
+@app.route('/users/add_like/<int:message_id>', methods=['POST'])
+def add_like(message_id):
+    """Add like to a message"""
+    message = Message.query.get_or_404(message_id)
+    if message not in g.user.likes:
+        new_rel = Likes(user_id=g.user.id, message_id=message_id)
+        db.session.add(new_rel)
+        db.session.commit()
+    else:
+        like = Likes.query.filter(Likes.message_id == message.id).first()
+        db.session.delete(like)
+        db.session.commit()
+    return redirect('/')
 
 
 @app.route('/users/delete', methods=["POST"])
