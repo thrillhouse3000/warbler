@@ -16,7 +16,7 @@
                   <img src="{{ msg.user.image_url }}" alt="Image for {{ msg.user.username }}" class="card-image">
                   <p>@{{ msg.user.username }}</p>
                 </a>
-                <form method="POST" action="/users/add_like/{{ msg.id }}" id="msgs-form">
+                <form method="POST" action="/users/handle_like/{{ msg.id }}" id="msgs-form">
                     <button class="btn btn-sm {% if msg in g.user.likes %}btn-primary{% else %}btn-secondary{% endif %}">
                       <i class="fa fa-thumbs-up"></i> 
                     </button>

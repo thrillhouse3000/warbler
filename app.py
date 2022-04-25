@@ -246,9 +246,13 @@ def profile(user_id):
             return redirect('/')
     return render_template('users/edit.html', form=form)
 
-@app.route('/users/add_like/<int:message_id>', methods=['POST'])
+
+@app.route('/users/handle_like/<int:message_id>', methods=['POST'])
 def add_like(message_id):
     """Add like to a message"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
     message = Message.query.get_or_404(message_id)
     if message not in g.user.likes:
         new_rel = Likes(user_id=g.user.id, message_id=message_id)
@@ -307,7 +311,7 @@ def messages_add():
 def messages_show(message_id):
     """Show a message."""
 
-    msg = Message.query.get(message_id)
+    msg = Message.query.get_or_404(message_id)
     return render_template('messages/show.html', message=msg)
 
 
@@ -320,6 +324,11 @@ def messages_destroy(message_id):
         return redirect("/")
 
     msg = Message.query.get(message_id)
+
+    if g.user.id != msg.user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
     db.session.delete(msg)
     db.session.commit()
 
