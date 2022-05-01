@@ -4,7 +4,6 @@
     <ul class="list-group" id="messages">
 
       {% for message in messages %}
-
         <li class="list-group-item">
           <a href="/messages/{{ message.id }}" class="message-link"/>
 
@@ -17,8 +16,14 @@
             <span class="text-muted">{{ message.timestamp.strftime('%d %B %Y') }}</span>
             <p>{{ message.text }}</p>
           </div>
+          {% if message not in g.user.messages %}
+          <form method="POST" action="/users/handle_like/{{ message.id }}" id="messages-form">
+            <button class="btn btn-sm {% if message in g.user.likes %}btn-primary{% else %}btn-secondary{% endif %}">
+              <i class="fa fa-thumbs-up"></i> 
+            </button>
+          </form>
+          {% endif %}
         </li>
-
       {% endfor %}
 
     </ul>

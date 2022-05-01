@@ -202,7 +202,7 @@ def add_follow(follow_id):
     g.user.following.append(followed_user)
     db.session.commit()
 
-    return redirect(f"/users/{g.user.id}/following")
+    return redirect(request.referrer)
 
 
 @app.route('/users/stop-following/<int:follow_id>', methods=['POST'])
@@ -217,7 +217,7 @@ def stop_following(follow_id):
     g.user.following.remove(followed_user)
     db.session.commit()
 
-    return redirect(f"/users/{g.user.id}/following")
+    return redirect(request.referrer)
 
 
 @app.route('/users/<int:user_id>/profile', methods=["GET", "POST"])
@@ -262,7 +262,7 @@ def add_like(message_id):
         like = Likes.query.filter(Likes.message_id == message.id).first()
         db.session.delete(like)
         db.session.commit()
-    return redirect('/')
+    return redirect(request.referrer)
 
 
 @app.route('/users/delete', methods=["POST"])
